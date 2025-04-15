@@ -1,0 +1,791 @@
+
+    <html>
+    <head>
+      <title>Falco Extended Rules Viewer</title>
+      <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script type="text/javascript"
+        src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+      <script>
+        $(document).ready(function() {
+            $('#falcoTable').DataTable({
+                "pageLength": 20
+            });
+            $('#tagTable').DataTable({
+                "pageLength": 10
+            });
+        });
+      </script>
+    </head>
+    <body>
+      <h2>📋 Falco Extended Rules Viewer</h2>
+      <h3>📊 Tag Statistics</h3>
+      <table border="1" class="dataframe display" id="tagTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Tag</th>
+      <th>Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>host</td>
+      <td>54</td>
+    </tr>
+    <tr>
+      <td>container</td>
+      <td>54</td>
+    </tr>
+    <tr>
+      <td>account</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>mitre_discovery</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>account_manipulation</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1098</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>data</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>mitre_collection</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>archive_collected_data</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1560</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>bash</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>mitre_credential_accesss</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>unsecured_credential_access</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1552</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>process</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>mitre_persistance</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>boot_or_logon_autostart_execution</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1547</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>permission</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>file</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>directory</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>mitre_defense_evasion</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>file_and_directory_permission_modification</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1222</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>user</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>create_account</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1136</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>k8s</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>nodeport</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>mitre_priviledge_escalation</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>create_or_modify_system_service</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1543</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>credentials</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>mitre_credential_access</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>credentials_from_password_stores</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1555</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>system_service_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1007</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>mitre_creential_access</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>os_credential_dumping</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1003</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>network</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>remote_system_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1018</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>group</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>permission_groups_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1069</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>filesystem</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>mitre_impact</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>data_destruction_for_impact</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1485</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>device</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>hardware</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>peripheral_device_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1120</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>service</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>service_stop</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1489</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>time</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>date</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>system_time_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1124</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>disk</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>direct_volume_access</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1006</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>command</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>indirect_command_execution</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1202</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>domain_trust_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1482</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>location</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>system_location_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1614</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>application_window_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1010</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>software_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1518</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>recovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>inhibit_system_recovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1490</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>disk_wipe</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1561</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>process_injection</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1055</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>authentication</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>password_policy_discovery</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>T1201</td>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+      <h3>🔎 Falco Rules</h3>
+      <table border="1" class="dataframe display" id="falcoTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Rule</th>
+      <th>Description</th>
+      <th>Tags</th>
+      <th>Source</th>
+      <th>Priority</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Account Manipulation in SSH</td>
+      <td>an attempt to do account manipulation using ssh</td>
+      <td>host, container, account, mitre_discovery, account_manipulation, T1098</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Archive and Compression Activity</td>
+      <td>Detects archive and compression activity using tar, zip, gzip, and bzip2.</td>
+      <td>host, container, data, mitre_collection, archive_collected_data, T1560</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Attempt to Access Bash History File</td>
+      <td>Someone is attempting to access the bash history file</td>
+      <td>host, container, bash, mitre_credential_accesss, unsecured_credential_access, T1552</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Boot or Logon Autostart Execution</td>
+      <td>an attempt to embedd a script to execute at the time of boot or logon</td>
+      <td>host, container, process, mitre_persistance, boot_or_logon_autostart_execution, T1547</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Chown or Chmod Operation</td>
+      <td>Detects chown or chmod operations</td>
+      <td>host, container, permission, file, directory, mitre_defense_evasion, file_and_directory_permission_modification, T1222</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Create Account or Add User</td>
+      <td>activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n</td>
+      <td>host, container, user, account, mitre_persistance, create_account, T1136</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Create NodePort Service</td>
+      <td>Detect an attempt to start a service with a NodePort service type\n</td>
+      <td>k8s, nodeport</td>
+      <td>k8s_audit</td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Create or Modify System Process</td>
+      <td>a system process may be created or a existing process may be modified to keep malicious process running continuously</td>
+      <td>host, container, process, mitre_priviledge_escalation, create_or_modify_system_service, T1543</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Credentials From Password File</td>
+      <td>activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n</td>
+      <td>host, container, credentials, mitre_credential_access, credentials_from_password_stores, T1555</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>System Service Discovery</td>
+      <td>an attempt to discover all services that are running in system</td>
+      <td>host, container, process, mitre_discovery, system_service_discovery, T1007</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Account Manipulation in SSH</td>
+      <td>an attempt to do account manipulation using ssh</td>
+      <td>host, container, account, mitre_discovery, account_manipulation, T1098</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Read Maps File of Process</td>
+      <td>An attempt to read the maps file of a process was detected</td>
+      <td>host, container, process, mitre_creential_access, os_credential_dumping, T1003</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Suspicious Network Scanning Command</td>
+      <td>Detects suspicious network scanning commands</td>
+      <td>host, container, network, mitre_discovery, remote_system_discovery, T1018</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Chown or Chmod Operation</td>
+      <td>Detects chown or chmod operations</td>
+      <td>host, container, permission, file, directory, mitre_defense_evasion, file_and_directory_permission_modification, T1222</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Permission and Group Members Discovery</td>
+      <td>rule to detect permission of files and group and its group members</td>
+      <td>host, container, permission, group, mitre_discovery, permission_groups_discovery, T1069</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Detect Data Destruction Activity</td>
+      <td>Detects activity related to data destruction, such as file shredding or disk wiping.</td>
+      <td>host, container, filesystem, process, mitre_impact, data_destruction_for_impact, T1485</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Archive and Compression Activity</td>
+      <td>Detects archive and compression activity using tar, zip, gzip, and bzip2.</td>
+      <td>host, container, data, mitre_collection, archive_collected_data, T1560</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect Peripheral Device Enumeration Commands</td>
+      <td>Detects if someone runs commands that enumerate peripheral devices.</td>
+      <td>host, container, device, hardware, mitre_discovery, peripheral_device_discovery, T1120</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect Service Disable Using Systemctl</td>
+      <td>Detects when a user disables a service using the systemctl command.</td>
+      <td>host, container, service, process, mitre_impact, service_stop, T1489</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Create NodePort Service</td>
+      <td>Detect an attempt to start a service with a NodePort service type\n</td>
+      <td>k8s, nodeport</td>
+      <td>k8s_audit</td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Suspicious Time and Date Command Execution</td>
+      <td>Detects the execution of commands that may be used to gather time, date, and region information</td>
+      <td>host, container, time, date, mitre_discovery, system_time_discovery, T1124</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Read Disk Block Command</td>
+      <td>Detects execution of commands that read disk blocks</td>
+      <td>host, container, disk, mitre_defense_evasion, direct_volume_access, T1006</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Execute Command Via Utility</td>
+      <td>Detects execution of commands via utilities commonly used to parse text, scripting languages, and system utilities</td>
+      <td>host, container, command, mitre_defense_evasion, indirect_command_execution, T1202</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Enumerate Domain Trusts</td>
+      <td>Detects attempts to enumerate domain trusts in Linux systems</td>
+      <td>host, container, mitre_discovery, domain_trust_discovery, T1482</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect System Location Information Retrieval</td>
+      <td>Detects attempts to retrieve system information</td>
+      <td>host, container, location, mitre_discovery, system_location_discovery, T1614</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Attempt to Access Bash History File</td>
+      <td>Someone is attempting to access the bash history file</td>
+      <td>host, container, bash, mitre_credential_accesss, unsecured_credential_access, T1552</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Get Information About Open Application Windows</td>
+      <td>Detects attempts to get information about open application windows</td>
+      <td>host, container, process, mitre_discovery, application_window_discovery, T1010</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Suspicious System Information Gathering</td>
+      <td>Detects suspicious commands related to gathering system information</td>
+      <td>host, container, data, mitre_discovery, software_discovery, T1518</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Disable Recovery Features</td>
+      <td>Detects disabling system recovery features by deleting or disabling services and commands.</td>
+      <td>host, container, recovery, mitre_impact, inhibit_system_recovery, T1490</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Suspicious Disk Activity</td>
+      <td>Detects suspicious disk activity such as wiping, overwriting or corrupting raw disk data.</td>
+      <td>host, container, disk, mitre_impact, disk_wipe, T1561</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Boot or Logon Autostart Execution</td>
+      <td>an attempt to embedd a script to execute at the time of boot or logon</td>
+      <td>host, container, process, mitre_persistance, boot_or_logon_autostart_execution, T1547</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Create Account or Add User</td>
+      <td>activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n</td>
+      <td>host, container, user, account, mitre_persistance, create_account, T1136</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Create or Modify System Process</td>
+      <td>a system process may be created or a existing process may be modified to keep malicious process running continuously</td>
+      <td>host, container, process, mitre_priviledge_escalation, create_or_modify_system_service, T1543</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Credentials From Password File</td>
+      <td>activity by any programs that can manage users, passwords, or permissions. sudo and su are excluded. Activity in containers is also excluded--some containers create custom users on top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded.\n</td>
+      <td>host, container, credentials, mitre_credential_access, credentials_from_password_stores, T1555</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Modify authentication process</td>
+      <td>an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n</td>
+      <td>host, container</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Process Injection</td>
+      <td>This rule detects an attempt to inject code into a process using PTRACE.</td>
+      <td>host, container, process, mitre_priviledge_escalation, process_injection, T1055</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Password Policy Discovery</td>
+      <td>an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n</td>
+      <td>host, container, authentication, mitre_discovery, password_policy_discovery, T1201</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect Data Destruction Activity</td>
+      <td>Detects activity related to data destruction, such as file shredding or disk wiping.</td>
+      <td>host, container, filesystem, process, mitre_impact, data_destruction_for_impact, T1485</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect Peripheral Device Enumeration Commands</td>
+      <td>Detects if someone runs commands that enumerate peripheral devices.</td>
+      <td>host, container, device, hardware, mitre_discovery, peripheral_device_discovery, T1120</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect Service Disable Using Systemctl</td>
+      <td>Detects when a user disables a service using the systemctl command.</td>
+      <td>host, container, service, process, mitre_impact, service_stop, T1489</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Suspicious Disk Activity</td>
+      <td>Detects suspicious disk activity such as wiping, overwriting or corrupting raw disk data.</td>
+      <td>host, container, disk, mitre_impact, disk_wipe, T1561</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Disable Recovery Features</td>
+      <td>Detects disabling system recovery features by deleting or disabling services and commands.</td>
+      <td>host, container, recovery, mitre_impact, inhibit_system_recovery, T1490</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Enumerate Domain Trusts</td>
+      <td>Detects attempts to enumerate domain trusts in Linux systems</td>
+      <td>host, container, mitre_discovery, domain_trust_discovery, T1482</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Execute Command Via Utility</td>
+      <td>Detects execution of commands via utilities commonly used to parse text, scripting languages, and system utilities</td>
+      <td>host, container, command, mitre_defense_evasion, indirect_command_execution, T1202</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Get Information About Open Application Windows</td>
+      <td>Detects attempts to get information about open application windows</td>
+      <td>host, container, process, mitre_discovery, application_window_discovery, T1010</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Read Maps File of Process</td>
+      <td>An attempt to read the maps file of a process was detected</td>
+      <td>host, container, process, mitre_creential_access, os_credential_dumping, T1003</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Modify authentication process</td>
+      <td>an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n</td>
+      <td>host, container</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Password Policy Discovery</td>
+      <td>an attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs.\n</td>
+      <td>host, container, authentication, mitre_discovery, password_policy_discovery, T1201</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Permission and Group Members Discovery</td>
+      <td>rule to detect permission of files and group and its group members</td>
+      <td>host, container, permission, group, mitre_discovery, permission_groups_discovery, T1069</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Process Injection</td>
+      <td>This rule detects an attempt to inject code into a process using PTRACE.</td>
+      <td>host, container, process, mitre_priviledge_escalation, process_injection, T1055</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Read Disk Block Command</td>
+      <td>Detects execution of commands that read disk blocks</td>
+      <td>host, container, disk, mitre_defense_evasion, direct_volume_access, T1006</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Suspicious System Information Gathering</td>
+      <td>Detects suspicious commands related to gathering system information</td>
+      <td>host, container, data, mitre_discovery, software_discovery, T1518</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Suspicious Network Scanning Command</td>
+      <td>Detects suspicious network scanning commands</td>
+      <td>host, container, network, mitre_discovery, remote_system_discovery, T1018</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Suspicious Time and Date Command Execution</td>
+      <td>Detects the execution of commands that may be used to gather time, date, and region information</td>
+      <td>host, container, time, date, mitre_discovery, system_time_discovery, T1124</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect System Location Information Retrieval</td>
+      <td>Detects attempts to retrieve system information</td>
+      <td>host, container, location, mitre_discovery, system_location_discovery, T1614</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>System Service Discovery</td>
+      <td>an attempt to discover all services that are running in system</td>
+      <td>host, container, process, mitre_discovery, system_service_discovery, T1007</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+  </tbody>
+</table>
+    </body>
+    </html>
+    

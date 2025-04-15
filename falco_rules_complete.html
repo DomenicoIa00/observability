@@ -1,0 +1,641 @@
+
+    <html>
+    <head>
+      <title>Falco Rules Viewer</title>
+      <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+      <script type="text/javascript"
+        src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script type="text/javascript"
+        src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+      <script>
+        $(document).ready(function() {
+            $('#falcoTable').DataTable({
+                "pageLength": 20
+            });
+            
+        });
+      </script>
+    </head>
+    <body>
+      <h2>📋 Falco Rules Viewer</h2>
+      
+      <h3>🔎 Falco Rules</h3>
+      <table border="1" class="dataframe display" id="falcoTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Rule</th>
+      <th>Description</th>
+      <th>Tags</th>
+      <th>Source</th>
+      <th>Priority</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Directory traversal monitored file read</td>
+      <td>Web applications can be vulnerable to directory traversal attacks that allow accessing files outside of the web app's root directory  (e.g. Arbitrary File Read bugs). System directories like /etc are typically accessed via absolute paths. Access patterns outside of this  (here path traversal) can be regarded as suspicious. This rule includes failed file open attempts.\n</td>
+      <td>maturity_stable, host, container, filesystem, mitre_credential_access, T1555</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Read sensitive file trusted after startup</td>
+      <td>An attempt to read any sensitive file (e.g. files containing user/password/authentication information) by a trusted program after startup. Trusted programs might read these files at startup to load initial state, but not afterwards. Can be customized as needed. In modern containerized cloud infrastructures, accessing traditional Linux sensitive files  might be less relevant, yet it remains valuable for baseline detections. While we provide additional  rules for SSH or cloud vendor-specific credentials, you can significantly enhance your security  program by crafting custom rules for critical application credentials unique to your environment.\n</td>
+      <td>maturity_stable, host, container, filesystem, mitre_credential_access, T1555</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Read sensitive file untrusted</td>
+      <td>An attempt to read any sensitive file (e.g. files containing user/password/authentication information). Exceptions are made for known trusted programs. Can be customized as needed. In modern containerized cloud infrastructures, accessing traditional Linux sensitive files  might be less relevant, yet it remains valuable for baseline detections. While we provide additional  rules for SSH or cloud vendor-specific credentials, you can significantly enhance your security  program by crafting custom rules for critical application credentials unique to your environment.\n</td>
+      <td>maturity_stable, host, container, filesystem, mitre_credential_access, T1555</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Run shell untrusted</td>
+      <td>An attempt to spawn a shell below a non-shell application. The non-shell applications that are monitored are  defined in the protected_shell_spawner macro, with protected_shell_spawning_binaries being the list you can  easily customize. For Java parent processes, please note that Java often has a custom process name. Therefore,  rely more on proc.exe to define Java applications. This rule can be noisier, as you can see in the exhaustive  existing tuning. However, given it is very behavior-driven and broad, it is universally relevant to catch  general Remote Code Execution (RCE). Allocate time to tune this rule for your use cases and reduce noise.  Tuning suggestions include looking at the duration of the parent process (proc.ppid.duration) to define your  long-running app processes. Checking for newer fields such as proc.vpgid.name and proc.vpgid.exe instead of the  direct parent process being a non-shell application could make the rule more robust.\n</td>
+      <td>maturity_stable, host, container, process, shell, mitre_execution, T1059.004</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>System user interactive</td>
+      <td>System (e.g. non-login) users spawning new processes. Can add custom service users (e.g. apache or mysqld). 'Interactive' is defined as new processes as descendants of an ssh session or login process. Consider further tuning  by only looking at processes in a terminal / tty (proc.tty != 0). A newer field proc.is_vpgid_leader could be of help  to distinguish if the process was "directly" executed, for instance, in a tty, or executed as a descendant process in the  same process group, which, for example, is the case when subprocesses are spawned from a script. Consider this rule  as a great template rule to monitor interactive accesses to your systems more broadly. However, such a custom rule would be  unique to your environment. The rule "Terminal shell in container" that fires when using "kubectl exec" is more Kubernetes  relevant, whereas this one could be more interesting for the underlying host.\n</td>
+      <td>maturity_stable, host, container, users, mitre_execution, T1059, NIST_800-53_AC-2</td>
+      <td></td>
+      <td>INFO</td>
+    </tr>
+    <tr>
+      <td>Terminal shell in container</td>
+      <td>A shell was used as the entrypoint/exec point into a container with an attached terminal. Parent process may have  legitimately already exited and be null (read container_entrypoint macro). Common when using "kubectl exec" in Kubernetes.  Correlate with k8saudit exec logs if possible to find user or serviceaccount token used (fuzzy correlation by namespace and pod name).  Rather than considering it a standalone rule, it may be best used as generic auditing rule while examining other triggered  rules in this container/tty.\n</td>
+      <td>maturity_stable, container, shell, mitre_execution, T1059</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Contact K8S API Server From Container</td>
+      <td>Detect attempts to communicate with the K8S API Server from a container by non-profiled users. Kubernetes APIs play a  pivotal role in configuring the cluster management lifecycle. Detecting potential unauthorized access to the API server  is of utmost importance. Audit your complete infrastructure and pinpoint any potential machines from which the API server  might be accessible based on your network layout. If Falco can't operate on all these machines, consider analyzing the  Kubernetes audit logs (typically drained from control nodes, and Falco offers a k8saudit plugin) as an additional data  source for detections within the control plane.\n</td>
+      <td>maturity_stable, container, network, k8s, mitre_discovery, T1565</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Netcat Remote Code Execution in Container</td>
+      <td>Netcat Program runs inside container that allows remote code execution and may be utilized  as a part of a variety of reverse shell payload https://github.com/swisskyrepo/PayloadsAllTheThings/. These programs are of higher relevance as they are commonly installed on UNIX-like operating systems. Can fire in combination with the "Redirect STDOUT/STDIN to Network Connection in Container"  rule as it utilizes a different evt.type.\n</td>
+      <td>maturity_stable, container, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Search Private Keys or Passwords</td>
+      <td>Detect attempts to search for private keys or passwords using the grep or find command. This is often seen with  unsophisticated attackers, as there are many ways to access files using bash built-ins that could go unnoticed.  Regardless, this serves as a solid baseline detection that can be tailored to cover these gaps while maintaining  an acceptable noise level.\n</td>
+      <td>maturity_stable, host, container, process, filesystem, mitre_credential_access, T1552.001</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Clear Log Activities</td>
+      <td>Detect clearing of critical access log files, typically done to erase evidence that could be attributed to an adversary's  actions. To effectively customize and operationalize this detection, check for potentially missing log file destinations  relevant to your environment, and adjust the profiled containers you wish not to be alerted on.\n</td>
+      <td>maturity_stable, host, container, filesystem, mitre_defense_evasion, T1070, NIST_800-53_AU-10</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Remove Bulk Data from Disk</td>
+      <td>Detect a process running to clear bulk data from disk with the intention to destroy data, possibly interrupting availability  to systems. Profile your environment and use user_known_remove_data_activities to tune this rule.\n</td>
+      <td>maturity_stable, host, container, process, filesystem, mitre_impact, T1485</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Create Symlink Over Sensitive Files</td>
+      <td>Detect symlinks created over a curated list of sensitive files or subdirectories under /etc/ or  root directories. Can be customized as needed. Refer to further and equivalent guidance within the  rule "Read sensitive file untrusted".\n</td>
+      <td>maturity_stable, host, container, filesystem, mitre_credential_access, T1555</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Create Hardlink Over Sensitive Files</td>
+      <td>Detect hardlink created over a curated list of sensitive files or subdirectories under /etc/ or  root directories. Can be customized as needed. Refer to further and equivalent guidance within the  rule "Read sensitive file untrusted".\n</td>
+      <td>maturity_stable, host, container, filesystem, mitre_credential_access, T1555</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Packet socket created in container</td>
+      <td>Detect new packet socket at the device driver (OSI Layer 2) level in a container. Packet socket could be used for ARP Spoofing  and privilege escalation (CVE-2020-14386) by an attacker. Noise can be reduced by using the user_known_packet_socket_binaries template list.\n</td>
+      <td>maturity_stable, container, network, mitre_credential_access, T1557.002</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Redirect STDOUT/STDIN to Network Connection in Container</td>
+      <td>Detect redirection of stdout/stdin to a network connection within a container, achieved by utilizing a  variant of the dup syscall (potential reverse shell or remote code execution  https://github.com/swisskyrepo/PayloadsAllTheThings/). This detection is behavior-based and may generate  noise in the system, and can be adjusted using the user_known_stand_streams_redirect_activities template  macro. Tuning can be performed similarly to existing detections based on process lineage or container images,  and/or it can be limited to interactive tty (tty != 0).\n</td>
+      <td>maturity_stable, container, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Linux Kernel Module Injection Detected</td>
+      <td>Inject Linux Kernel Modules from containers using insmod or modprobe with init_module and finit_module syscalls, given the precondition of sys_module effective capabilities. Profile the environment and consider allowed_container_images_loading_kernel_module to reduce noise and account for legitimate cases.\n</td>
+      <td>maturity_stable, host, container, process, mitre_persistence, TA0003</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Debugfs Launched in Privileged Container</td>
+      <td>Detect file system debugger debugfs launched inside a privileged container which might lead to container escape.  This rule has a more narrow scope.\n</td>
+      <td>maturity_stable, container, cis, process, mitre_privilege_escalation, T1611</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Detect release_agent File Container Escapes</td>
+      <td>Detect an attempt to exploit a container escape using release_agent file.  By running a container with certains capabilities, a privileged user can modify  release_agent file and escape from the container.\n</td>
+      <td>maturity_stable, container, process, mitre_privilege_escalation, T1611</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>PTRACE attached to process</td>
+      <td>Detect an attempt to inject potentially malicious code into a process using PTRACE in order to evade  process-based defenses or elevate privileges. Common anti-patterns are debuggers. Additionally, profiling  your environment via the known_ptrace_procs template macro can reduce noise.  A successful ptrace syscall generates multiple logs at once.\n</td>
+      <td>maturity_stable, host, container, process, mitre_privilege_escalation, T1055.008</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>PTRACE anti-debug attempt</td>
+      <td>Detect usage of the PTRACE system call with the PTRACE_TRACEME argument, indicating a program actively attempting  to avoid debuggers attaching to the process. This behavior is typically indicative of malware activity. Read more about PTRACE in the "PTRACE attached to process" rule.\n</td>
+      <td>maturity_stable, host, container, process, mitre_defense_evasion, T1622</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Find AWS Credentials</td>
+      <td>Detect attempts to search for private keys or passwords using the grep or find command, particularly targeting standard  AWS credential locations. This is often seen with unsophisticated attackers, as there are many ways to access files  using bash built-ins that could go unnoticed. Regardless, this serves as a solid baseline detection that can be tailored  to cover these gaps while maintaining an acceptable noise level. This rule complements the rule "Search Private Keys or Passwords".\n</td>
+      <td>maturity_stable, host, container, process, aws, mitre_credential_access, T1552</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Execution from /dev/shm</td>
+      <td>This rule detects file execution in the /dev/shm directory, a tactic often used by threat actors to store their readable, writable, and  occasionally executable files. /dev/shm acts as a link to the host or other containers, creating vulnerabilities for their compromise  as well. Notably, /dev/shm remains unchanged even after a container restart. Consider this rule alongside the newer  "Drop and execute new binary in container" rule.\n</td>
+      <td>maturity_stable, host, container, mitre_execution, T1059.004</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Drop and execute new binary in container</td>
+      <td>Detect if an executable not belonging to the base image of a container is being executed. The drop and execute pattern can be observed very often after an attacker gained an initial foothold. is_exe_upper_layer filter field only applies for container runtimes that use overlayfs as union mount filesystem. Adopters can utilize the provided template list known_drop_and_execute_containers containing allowed container  images known to execute binaries not included in their base image. Alternatively, you could exclude non-production namespaces in Kubernetes settings by adjusting the rule further. This helps reduce noise by applying application  and environment-specific knowledge to this rule. Common anti-patterns include administrators or SREs performing  ad-hoc debugging.\n</td>
+      <td>maturity_stable, container, process, mitre_persistence, TA0003, PCI_DSS_11.5.1</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Disallowed SSH Connection Non Standard Port</td>
+      <td>Detect any new outbound SSH connection from the host or container using a non-standard port. This rule holds the potential  to detect a family of reverse shells that cause the victim machine to connect back out over SSH, with STDIN piped from  the SSH connection to a shell's STDIN, and STDOUT of the shell piped back over SSH. Such an attack can be launched against  any app that is vulnerable to command injection. The upstream rule only covers a limited selection of non-standard ports.  We suggest adding more ports, potentially incorporating ranges based on your environment's knowledge and custom SSH port  configurations. This rule can complement the "Redirect STDOUT/STDIN to Network Connection in Container" or  "Disallowed SSH Connection" rule.\n</td>
+      <td>maturity_stable, host, container, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Fileless execution via memfd_create</td>
+      <td>Detect if a binary is executed from memory using the memfd_create technique. This is a well-known defense evasion  technique for executing malware on a victim machine without storing the payload on disk and to avoid leaving traces  about what has been executed. Adopters can whitelist processes that may use fileless execution for benign purposes  by adding items to the list known_memfd_execution_processes.\n</td>
+      <td>maturity_stable, host, container, process, mitre_defense_evasion, T1620</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Unexpected inbound connection source</td>
+      <td>Detect any inbound connection from a source outside of an allowed set of ips, networks, or domain names.  This rule absolutely requires profiling your environment beforehand. Network-based rules are extremely crucial  in any security program, as they can often provide the only definitive evidence. However, effectively operationalizing  them can be challenging due to the potential for noise.\n</td>
+      <td>maturity_sandbox, host, container, network, mitre_command_and_control, TA0011</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Read Shell Configuration File</td>
+      <td>This rule detects attempts made by non-shell programs to read shell configuration files. It offers additional generic auditing.  It serves as a baseline detection alert for unusual shell configuration file accesses. The rule "Modify Shell Configuration File"  might be more relevant and adequate for your specific cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_discovery, T1546.004</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Update Package Repository</td>
+      <td>This rule generically detects updates to package repositories and can be seen as an auditing measure.  Recommend evaluating its relevance for your specific environment.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_execution, T1072</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Write below binary dir</td>
+      <td>Trying to write to any file below specific binary directories can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_persistence, T1543</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Write below monitored dir</td>
+      <td>Trying to write to any file below a set of monitored directories can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_persistence, T1543</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Write below etc</td>
+      <td>Trying to write to any file below /etc can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_persistence, T1098</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Write below root</td>
+      <td>Trying to write to any file directly below / or /root can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases. Lastly, this rule stands out as potentially the noisiest one among rules related  to "write below.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_persistence, TA0003</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Write below rpm database</td>
+      <td>Trying to write to the rpm database by any non-rpm related program can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, software_mgmt, mitre_persistence, T1072</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Modify binary dirs</td>
+      <td>Trying to modify any file below a set of binary directories can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_defense_evasion, T1222.002</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Mkdir binary dirs</td>
+      <td>Trying to create a directory below a set of binary directories can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_persistence, T1222.002</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Launch Sensitive Mount Container</td>
+      <td>Detect the initial process launched within a container that has a mount from a sensitive host directory (e.g. /proc).  Exceptions are made for known trusted images. This rule holds value for generic auditing; however, its noisiness  varies based on your environment.\n</td>
+      <td>maturity_sandbox, container, cis, mitre_execution, T1610</td>
+      <td></td>
+      <td>INFO</td>
+    </tr>
+    <tr>
+      <td>Launch Disallowed Container</td>
+      <td>Detect the initial process launched within a container that is not in a list of allowed containers.  This rule holds value for generic auditing; however, this rule requires a good understanding of your  setup and consistent effort to keep the list of allowed containers current. In some situations,  this can be challenging to manage.\n</td>
+      <td>maturity_sandbox, container, mitre_lateral_movement, T1610</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Interpreted procs inbound network activity</td>
+      <td>Any inbound network activity performed by any interpreted program (perl, python, ruby, etc.). While it offers broad coverage and behavioral  insights, operationalizing it effectively requires significant time and might result in a moderate level of noise. Suggesting customizing  this rule to be more specific. For example, you could set it up to alert only for important namespaces after studying their usual behavior.\n</td>
+      <td>maturity_sandbox, host, container, network, mitre_exfiltration, TA0011</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Interpreted procs outbound network activity</td>
+      <td>Any outbound network activity performed by any interpreted program (perl, python, ruby, etc.). While it offers broad coverage and behavioral  insights, operationalizing it effectively requires significant time and might result in a moderate level of noise. Suggesting customizing  this rule to be more specific. For example, you could set it up to alert only for important namespaces after studying their usual behavior.\n</td>
+      <td>maturity_sandbox, host, container, network, mitre_exfiltration, TA0011</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Unexpected K8s NodePort Connection</td>
+      <td>Detect attempts to utilize K8s NodePorts from a container. K8s NodePorts are accessible on the eth0 interface of  each node, and they facilitate external traffic into a Kubernetes cluster. Attackers could misuse them for  unauthorized access. The rule uses default port ranges, but check for custom ranges and make necessary adjustments.  Also, consider tuning this rule as needed.\n</td>
+      <td>maturity_sandbox, network, k8s, container, mitre_persistence, T1205.001, NIST_800-53_AC-6</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Create Hidden Files or Directories</td>
+      <td>Detecting hidden files or directories creation can serve as an auditing rule to track general system changes.  Such rules can be noisy and challenging to interpret, particularly if your system frequently undergoes updates. However, careful  profiling of your environment can transform this rule into an effective rule for detecting unusual behavior associated with system  changes, including compliance-related cases.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, mitre_defense_evasion, T1564.001</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Detect outbound connections to common miner pool ports</td>
+      <td>Miners usually connect to miner pools using standard ports, and this rule flags such activity. Important: Falco currently sends DNS  requests to resolve miner pool domains, which could trigger other alerts. Prior to enabling this rule, it's advised to ensure whether  this is acceptable for your environment. This rule is specifically disabled for that reason.\n</td>
+      <td>maturity_sandbox, host, container, network, mitre_impact, T1496</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Detect crypto miners using the Stratum protocol</td>
+      <td>Miners commonly specify the mining pool to connect to using a URI that starts with "stratum+tcp". However, this rule is highly specific to  this technique, and matching command-line arguments can generally be bypassed quite easily.\n</td>
+      <td>maturity_sandbox, host, container, process, mitre_impact, T1496</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Kubernetes Client Tool Launched in Container</td>
+      <td>Detect the execution of a Kubernetes client tool (like docker, kubectl, crictl) within a container, which is typically not expected behavior.  Although this rule targets container workloads, monitoring the use of tools like crictl on the host over interactive access could also be  valuable for broader auditing objectives.\n</td>
+      <td>maturity_sandbox, container, mitre_execution, T1610</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Container Drift Detected (chmod)</td>
+      <td>Detect new executables created within a container as a result of chmod. While this detection can generate significant noise, chmod  usage is frequently linked to dropping and executing malicious implants. The newer rule "Drop and execute new binary in container"  provides more precise detection of this TTP using unambiguous kernel signals. It is recommended to use the new rule. However, this  rule might be more relevant for auditing if applicable in your environment, such as when chmod is used on files within the /tmp folder.\n</td>
+      <td>maturity_sandbox, container, process, filesystem, mitre_execution, T1059</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Container Drift Detected (open+create)</td>
+      <td>Detect new executables created within a container as a result of open+create. The newer rule "Drop and execute new binary in container"  provides more precise detection of this TTP using unambiguous kernel signals. It is recommended to use the new rule. \n</td>
+      <td>maturity_sandbox, container, process, filesystem, mitre_execution, T1059</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Container Run as Root User</td>
+      <td>Container detected running as the root user. This should be taken into account especially when policies disallow containers from running with  root user privileges. Note that a root user in containers doesn't inherently possess extensive power, as modern container environments define  privileges through Linux capabilities. To learn more, check out the rule "Launch Privileged Container".\n</td>
+      <td>maturity_sandbox, container, process, users, mitre_execution, T1610</td>
+      <td></td>
+      <td>INFO</td>
+    </tr>
+    <tr>
+      <td>Sudo Potential Privilege Escalation</td>
+      <td>Affecting sudo (<= 1.9.5p2), there's a privilege escalation vulnerability. By executing sudo using the sudoedit -s or sudoedit -i command with a  command-line argument that ends with a single backslash character, an unprivileged user can potentially escalate privileges to root. This rule is  highly specific and might be bypassed due to potential issues with string matching on command line arguments.\n</td>
+      <td>maturity_sandbox, host, container, filesystem, users, mitre_privilege_escalation, T1548.003</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Unprivileged Delegation of Page Faults Handling to a Userspace Process</td>
+      <td>Detect a successful unprivileged userfaultfd syscall, which could serve as an attack primitive for exploiting other vulnerabilities.  To fine-tune this rule, consider using the template list "user_known_userfaultfd_processes".\n</td>
+      <td>maturity_sandbox, host, container, process, mitre_defense_evasion, TA0005</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Polkit Local Privilege Escalation Vulnerability (CVE-2021-4034)</td>
+      <td>This rule detects attempts to exploit a privilege escalation vulnerability in Polkit's pkexec. Through the execution of specially  crafted code, a local user can exploit this weakness to attain root privileges on a compromised system. This rule is highly  specific in its scope.\n</td>
+      <td>maturity_sandbox, host, container, process, users, mitre_privilege_escalation, TA0004</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Java Process Class File Download</td>
+      <td>Detecting a Java process downloading a class file which could indicate a successful exploit of the log4shell Log4j vulnerability (CVE-2021-44228).  This rule is highly specific in its scope.\n</td>
+      <td>maturity_sandbox, host, container, process, mitre_initial_access, T1190</td>
+      <td></td>
+      <td>CRITICAL</td>
+    </tr>
+    <tr>
+      <td>Modify Container Entrypoint</td>
+      <td>This rule detect an attempt to write on container entrypoint symlink (/proc/self/exe). Possible CVE-2019-5736 Container Breakout exploitation attempt.  This rule has a more narrow scope.\n</td>
+      <td>maturity_sandbox, container, filesystem, mitre_initial_access, T1611</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Decoding Payload in Container</td>
+      <td>Detect any use of {base64} decoding in a container. Legitimate applications may decode encoded payloads. The template list  known_decode_payload_containers can be used for simple tuning and customization, or you can adopt custom, more refined tuning. Less  sophisticated adversaries may {base64}-decode their payloads not only to obfuscate them, but also to ensure that the payload remains  intact when the application processes it. Note that injecting commands into an application's input often results in the application  processing passed strings like "sh -c". In these cases, you may be lucky and the encoded blob will also be logged. Otherwise, all you  will see is the {base64} decoding command, as the encoded blob was already interpreted by the shell. \n</td>
+      <td>maturity_sandbox, container, process, mitre_command_and_control, T1132</td>
+      <td></td>
+      <td>INFO</td>
+    </tr>
+    <tr>
+      <td>Basic Interactive Reconnaissance</td>
+      <td>This rule detects basic interactive reconnaissance commands that are typically run by unsophisticated attackers or used  in internal Red Team exercises. Interactive is defined as a terminal being present (proc.tty != 0). This could be any  form of reverse shell or usage of kubectl exec or ssh etc. In addition, filtering for the process being the process group   leader indicates that the command was "directly" typed into the terminal and not run as a result of a script. This rule  is a basic auditing or template rule. You can expand the list of reconnaissance commands, such as by adding "ls". Common  anti-patterns are SRE activity or debugging, but it is still worth capturing this generically. Typically, you would expect  other rules to fire as well in relation to this activity.\n</td>
+      <td>maturity_sandbox, host, container, process, mitre_reconnaissance, TA0043</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Netcat/Socat Remote Code Execution on Host</td>
+      <td>Netcat/Socat Program runs on host that allows remote code execution and may be utilized  as a part of a variety of reverse shell payload https://github.com/swisskyrepo/PayloadsAllTheThings/. These programs are of higher relevance as they are commonly installed on UNIX-like operating systems.\n</td>
+      <td>maturity_sandbox, host, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Modify Shell Configuration File</td>
+      <td>Detect attempts to modify shell configuration files, primarily aimed at establishing persistence by automatically inserting  commands into scripts executed by shells. The upstream rule excludes shell processes because they often create unnecessary noise. However, this might lead to missed detections. To customize the rule for your situation, you can fine-tune it using enhanced profiling.  For example, you might want to only consider interactive shell processes (where proc.tty != 0).\n</td>
+      <td>maturity_incubating, host, container, filesystem, mitre_persistence, T1546.004</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Schedule Cron Jobs</td>
+      <td>Detect scheduled cron jobs; this is a highly generic detection and certainly needs adjustments and profiling in your environment before  operationalization. Simultaneously, exploiting the functionality of cron jobs is among one of the oldest TTPs used by adversaries.\n</td>
+      <td>maturity_incubating, host, container, filesystem, mitre_execution, T1053.003</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Read ssh information</td>
+      <td>This rule identifies attempts to read files within ssh directories using programs that are not related to ssh. It's a simple and  versatile detection method that works well alongside more specific rules focused on sensitive file access. You have a couple of  options for using this rule effectively: you can adjust the specialized rules to cover all the important scenarios and ensure  precedence in rule smatching for those, or you can analyze the combined view of ssh-related file access across various rules on  your downstream computing platform. Just like with other rules, you can narrow down monitoring to specific processes, or you can  limit it to interactive access only.\n</td>
+      <td>maturity_incubating, host, container, filesystem, mitre_collection, T1005</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>DB program spawned process</td>
+      <td>A program related to the database server creates an unexpected child process (other than itself).  This is not supposed to happen and often follows SQL injection attacks. This behavioral detection could  indicate potential unauthorized data extraction or tampering with the database.\n</td>
+      <td>maturity_incubating, host, container, process, database, mitre_execution, T1190</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Change thread namespace</td>
+      <td>An attempt to alter the namespace of a process (often performed while creating a container) through the setns syscall.  Conversely, the same syscall setns is triggered when an unauthorized attempt is made to break out from the container  to the host, for example, when using commands like `nsenter --target 1` and similar ones. Recommending to profile your  environment and refine this rule for effective operationalization.\n</td>
+      <td>maturity_incubating, host, container, process, mitre_privilege_escalation, T1611</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Change namespace privileges via unshare</td>
+      <td>Unprivileged users in containers may not have CAP_SYS_ADMIN or other elevated privileges. However, they can   use the unshare system call with CLONE_NEWNS or CLONE_NEWUSER to create or clone a namespace or user with the  necessary privileges to conduct further attacks. It is best practice to block the unshare system call via  seccomp if it is not needed. Misuse of unshare can be related to misconfigured Kubernetes clusters, for example.\n</td>
+      <td>maturity_incubating, container, mitre_privilege_escalation, T1611</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Launch Privileged Container</td>
+      <td>Detect the initial process initiation within a privileged container, with exemptions for known and trusted images.  This rule primarily serves as an excellent auditing mechanism since highly privileged containers, when compromised,  can result in significant harm. For instance, if another rule triggers within such a privileged container, it could be  seen as more suspicious, prompting a closer inspection.\n</td>
+      <td>maturity_incubating, container, cis, mitre_execution, T1610, PCI_DSS_10.2.5</td>
+      <td></td>
+      <td>INFO</td>
+    </tr>
+    <tr>
+      <td>Launch Excessively Capable Container</td>
+      <td>Identify containers that start with a powerful set of capabilities, with exceptions for recognized trusted images.  Similar to the "Launch Privileged Container" rule, this functions as a robust auditing rule. Compromised highly privileged  containers can lead to substantial harm. For instance, if another rule is triggered within such a container, it might  raise suspicion, prompting closer scrutiny.\n</td>
+      <td>maturity_incubating, container, cis, mitre_execution, T1610</td>
+      <td></td>
+      <td>INFO</td>
+    </tr>
+    <tr>
+      <td>System procs network activity</td>
+      <td>Detect any unexpected network activity performed by system binaries that typically shouldn't perform network activity, including  coreutils binaries (like sleep, mkdir, who, date, and others) or user management binaries (such as login, systemd, usermod, deluser,  adduser, chpasswd, and others). This serves as a valuable baseline detection for network-related activities.\n</td>
+      <td>maturity_incubating, host, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Program run with disallowed http proxy env</td>
+      <td>Detect curl or wget usage with HTTP_PROXY environment variable. Attackers can manipulate the HTTP_PROXY variable's  value to redirect application's internal HTTP requests. This could expose sensitive information like authentication  keys and private data.\n</td>
+      <td>maturity_incubating, host, container, users, mitre_execution, T1204</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Unexpected UDP Traffic</td>
+      <td>Detecting UDP traffic on ports other than 53 (DNS) or other commonly used ports. Misusing UDP is a known TTP among attackers.  Monitoring unusual network activity is highly valuable but often generates significant noise, as is the case with this detection.\n</td>
+      <td>maturity_incubating, host, container, network, mitre_exfiltration, TA0011</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Non sudo setuid</td>
+      <td>Detect attempts to change users through the use of setuid, with exceptions for sudo/su.  The users "root" and "nobody" using setuid on themselves are also excluded, as setuid calls in these cases  typically involve reducing privileges. By setting the setuid bit, an attacker could execute code in a  different user's context, potentially with higher privileges. One drawback is the potential for noise,  as many applications legitimately use this approach.\n</td>
+      <td>maturity_incubating, host, container, users, mitre_privilege_escalation, T1548.001</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>User mgmt binaries</td>
+      <td>Detect activity by any programs that can manage users, passwords, or permissions (such as login, systemd, usermod, deluser, adduser,  chpasswd, and others). sudo and su are excluded. Activity in containers is also excluded -- some containers create custom users on  top of a base linux distribution at startup. Some innocuous command lines that don't actually change anything are excluded. You might  want to consider applying this rule to container actions as well.\n</td>
+      <td>maturity_incubating, host, users, software_mgmt, mitre_persistence, T1098</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Create files below dev</td>
+      <td>Detect the creation of files under /dev except for authorized device management programs. This can reveal rootkits hiding  files in /dev. Additionally, consider the "Execution from /dev/shm" rule. The upstream rule already covers some tuning  scenarios that you can further expand upon.\n</td>
+      <td>maturity_incubating, host, filesystem, mitre_persistence, T1543</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Contact EC2 Instance Metadata Service From Container</td>
+      <td>Detects attempts to communicate with the EC2 Instance Metadata Service from a container. This detection is narrowly focused  and might not apply to your environment. In addition, it could generate noise and require fine-tuning.\n</td>
+      <td>maturity_incubating, network, aws, container, mitre_credential_access, T1552.005</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Contact cloud metadata service from container</td>
+      <td>Detects attempts to communicate with the Cloud Instance Metadata Service from a container. This detection is narrowly focused  and might not apply to your environment. In addition, it could generate noise and require fine-tuning.\n</td>
+      <td>maturity_incubating, network, container, mitre_discovery, T1565</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Launch Package Management Process in Container</td>
+      <td>Detect package management processes executed within containers. An excellent auditing rule to monitor general drifts  in containers. Particularly useful for newer rules like "Drop and execute new binary in container" during incident  response investigations. This helps identify common anti-patterns of ad-hoc debugging. Simultaneously, to maintain  optimal hygiene, it's recommended to prevent container drifts and instead opt for redeploying new containers.\n</td>
+      <td>maturity_incubating, container, process, software_mgmt, mitre_persistence, T1505</td>
+      <td></td>
+      <td>ERROR</td>
+    </tr>
+    <tr>
+      <td>Launch Suspicious Network Tool in Container</td>
+      <td>Detect network tools (like netcat, nmap, tcpdump, socat, and more) launched within containers without any additional filters.  This serves as a valuable general detection, but it's recommended to invest engineering effort to fine-tune it and prevent a  high volume of legitimate logs. This rule complements the more specific "Netcat Remote Code Execution in Container" rule.\n</td>
+      <td>maturity_incubating, container, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Launch Suspicious Network Tool on Host</td>
+      <td>Detect network tools (like netcat, nmap, tcpdump, socat, and more) launched within containers without any additional filters.  This serves as a valuable general detection, but it's recommended to invest engineering effort to fine-tune it and prevent a  high volume of legitimate logs. The host equivalent of "Launch Suspicious Network Tool in Container.".\n</td>
+      <td>maturity_incubating, host, network, process, mitre_execution, T1059</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Delete or rename shell history</td>
+      <td>Detect shell history deletion, frequently used by unsophisticated adversaries to eliminate evidence.  Note that it can also trigger when exiting a Terminal shell, such as with `kubectl exec`, which  may introduce some noise.\n</td>
+      <td>maturity_incubating, host, container, process, filesystem, mitre_defense_evasion, T1070</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Set Setuid or Setgid bit</td>
+      <td>This rule is focused on detecting the use of setuid or setgid bits set via chmod. These bits, when set for an application,  result in the application running with the privileges of the owning user or group. By enabling the setuid or setgid bits,  an attacker could run code in a different user's context, possibly with elevated privileges. However, there's a trade-off  with noise, given that numerous applications legitimately run chmod. This rule is related to the "Non sudo setuid" rule.\n</td>
+      <td>maturity_incubating, host, container, process, users, mitre_privilege_escalation, T1548.001</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Launch Remote File Copy Tools in Container</td>
+      <td>Detect remote file copy tools (like rsync, scp, sftp, dcp) launched within a container, potentially indicating data  exfiltration. Suggest refining this rule to accommodate legitimate use cases.\n</td>
+      <td>maturity_incubating, container, network, process, mitre_exfiltration, T1020</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Network Connection outside Local Subnet</td>
+      <td>Detect network traffic (inbound or outbound) from a container to a destination outside the local subnet.  To operationalize this rule, profile your environment and update the template macro namespace_scope_network_only_subnet.  Customizing network-related rules usually demands substantial engineering effort to ensure their functionality.\n</td>
+      <td>maturity_incubating, container, network, mitre_discovery, T1046, PCI_DSS_6.4.2</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Mount Launched in Privileged Container</td>
+      <td>Detect filesystem mounts (using the mount binary) within a privileged container. Due to the elevated privileges,  this action could be one of the TTPs used in an attempt to escape from a container to the host. This type of action  is often preceded by reconnaissance activities, for which you can also create custom rules.\n</td>
+      <td>maturity_incubating, container, cis, filesystem, mitre_privilege_escalation, T1611</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Launch Ingress Remote File Copy Tools in Container</td>
+      <td>Detect ingress remote file copy tools (such as curl or wget) launched inside containers. This rule can be  considered a valuable auditing tool, but it has the potential to generate notable noise and requires careful  profiling before full operationalization.\n</td>
+      <td>maturity_incubating, container, network, process, mitre_command_and_control, TA0011</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Read environment variable from /proc files</td>
+      <td>An attempt to read process environment variables from /proc files. The consequences are akin to accessing traditional  sensitive files, as sensitive data, including secrets, might be stored in environment variables. Understanding your  environment, such as identifying critical namespaces, and incorporating extra filtering statements to alert exclusively  for those, can enhance the rule's effectiveness.\n</td>
+      <td>maturity_incubating, container, filesystem, process, mitre_discovery, T1083</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Exfiltrating Artifacts via Kubernetes Control Plane</td>
+      <td>Detect the copying of artifacts from a container's file system using the Kubernetes control plane (kubectl cp).  This rule can identify potential exfiltration of application secrets from containers' file systems, potentially  revealing the outcomes of unauthorized access and control plane misuse via stolen identities (such as stolen  credentials like Kubernetes serviceaccount tokens). Can be customized by the adopter to only monitor specific  artifact paths, containers, or namespaces as needed.\n</td>
+      <td>maturity_incubating, container, filesystem, mitre_exfiltration, TA0010</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Adding ssh keys to authorized_keys</td>
+      <td>After gaining access, attackers can modify the authorized_keys file to maintain persistence on a victim host. Where authorized_keys files are modified via cloud APIs or command line interfaces, an adversary may achieve  privilege escalation on the target virtual machine if they add a key to a higher-privileged user. This rules aims at detecting any modification to the authorized_keys file, that is usually located under the .ssh directory in any user's home directory. This rule complements the more generic auditing rule "Read ssh information" by specifically detecting the writing of new, potentially attacker-provided keys.\n</td>
+      <td>maturity_incubating, host, filesystem, mitre_persistence, T1098.004</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>Potential Local Privilege Escalation via Environment Variables Misuse</td>
+      <td>Process run with suspect environment variable that could be attempting privilege escalation. One use case is  detecting the use of the GLIBC_TUNABLES environment variable, which could be used for privilege escalation  on systems running vulnerable glibc versions. Only known and carefully profiled processes that legitimately  exhibit this behavior should be excluded from this rule. This rule is expected to trigger on every attempt,  even failed ones.\n</td>
+      <td>maturity_incubating, host, container, users, mitre_privilege_escalation, TA0004</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+    <tr>
+      <td>Backdoored library loaded into SSHD (CVE-2024-3094)</td>
+      <td>This rule detects possible CVE-2024-3094 exploitation when the SSH daemon process loads a vulnerable version of the liblzma library. An attacker could exploit this to interfere with authentication in sshd via systemd, potentially compromising sensitive data or escalating their privileges.</td>
+      <td>maturity_incubating, host, container, mitre_initial_access, T1556</td>
+      <td></td>
+      <td>WARNING</td>
+    </tr>
+    <tr>
+      <td>BPF Program Not Profiled</td>
+      <td>BPF is a kernel technology that can be misused for malicious purposes, like "Linux Kernel Module Injection". This  rule should be considered an auditing rule to notify you of any unprofiled BPF tools running in your environment.  However, it requires customization after profiling your environment. BPF-powered agents make bpf syscalls all the  time, so this rule only sends logs for BPF_PROG_LOAD calls (bpf cmd=5) in the enter event. If you also want to log  whether the syscall failed or succeeded, remove the direction filter and add the evt.arg.res_or_fd output field.\n</td>
+      <td>maturity_incubating, host, container, mitre_persistence, TA0003</td>
+      <td></td>
+      <td>NOTICE</td>
+    </tr>
+  </tbody>
+</table>
+    </body>
+    </html>
+    
