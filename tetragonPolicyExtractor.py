@@ -7,8 +7,7 @@ GITHUB_API_BASE = "https://api.github.com/repos/cilium/tetragon/contents/example
 RAW_BASE = "https://raw.githubusercontent.com/cilium/tetragon/main/examples/"
 TARGET_PATHS = ["policylibrary", "tracingpolicy"]
 
-# --- Optional: GitHub token per evitare rate limit ---
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # oppure inseriscilo direttamente qui (non consigliato)
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 HEADERS = {
     "Accept": "application/vnd.github.v3+json",
