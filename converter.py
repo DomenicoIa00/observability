@@ -70,19 +70,16 @@ def generate_html_file(df_rules, df_tags, filename, with_stats=True):
         f.write(full_html)
     print(f"✅ Generato: {filename}")
 
-# --- URLS delle rule ---
 url_main = "https://github.com/falcosecurity/rules/blob/main/rules/falco_rules.yaml"
 url_sandbox = "https://github.com/falcosecurity/rules/blob/main/rules/falco-sandbox_rules.yaml"
 url_incubating = "https://github.com/falcosecurity/rules/blob/main/rules/falco-incubating_rules.yaml"
 
-# --- Solo regole principali ---
 main_rules = load_rules_from_urls([url_main])
 df_main, tags_main = rules_to_dataframe(main_rules)
 
 generate_html_file(df_main, tags_main, "falco_rules_with_stats.html", with_stats=True)
 generate_html_file(df_main, tags_main, "falco_rules.html", with_stats=False)
 
-# --- Tutte le regole combinate ---
 all_rules = load_rules_from_urls([url_main, url_sandbox, url_incubating])
 df_all, tags_all = rules_to_dataframe(all_rules)
 
